@@ -5,8 +5,8 @@ import RecordScreen from "../screens/RecordScreen";
 import ListScreen from "../screens/ListScreen";
 
 export type RootStackParamList = {
-  Home: undefined;
-  Login: undefined;
+  ListScreen: undefined;
+  RecordScreen: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
