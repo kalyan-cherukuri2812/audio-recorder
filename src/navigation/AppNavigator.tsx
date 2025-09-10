@@ -15,7 +15,7 @@ export default function AppNavigator() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="RecordScreen"
+        initialRouteName="ListScreen"
         screenOptions={{
           headerShown: false,
         }}
