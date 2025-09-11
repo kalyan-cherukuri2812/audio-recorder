@@ -1,29 +1,51 @@
-import { View, Text } from "react-native";
+import { View, TouchableOpacity, StyleSheet } from "react-native";
 import React from "react";
 import ScreenWrapper from "../components/ScreenWrapper";
 import { AudioList } from "../components/AudioList";
+import { useAudioRecorder } from "../hooks/useAudioRecorder";
+import { Plus } from "lucide-react-native";
+import { useNavigation } from "@react-navigation/native";
 
 export default function ListScreen() {
-  const sampleRecordings: RecordingItem[] = [
-    {
-      uri: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-      createdAt: "2025-09-09 10:15:00",
-    },
-    {
-      uri: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
-      createdAt: "2025-09-09 10:20:00",
-    },
-    {
-      uri: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
-      createdAt: "2025-09-09 10:25:00",
-    },
-  ];
+  const navigation = useNavigation();
+  const { recordings, deleteRecording } = useAudioRecorder();
+  console.log("kjhgyujhgyujhbgyuhgh", recordings);
   return (
     <ScreenWrapper>
       <AudioList
-        recordings={sampleRecordings}
-        onDelete={() => {}}
+        recordings={recordings}
+        onDelete={deleteRecording}
       />
+      {/* Floating Button */}
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => navigation.navigate("RecordScreen")}
+        activeOpacity={0.7}
+      >
+        <Plus
+          size={28}
+          color="#fff"
+        />
+      </TouchableOpacity>
     </ScreenWrapper>
   );
 }
+
+const styles = StyleSheet.create({
+  fab: {
+    position: "absolute",
+    bottom: 30,
+    alignSelf: "center",
+    backgroundColor: "#0373FF",
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 6,
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 4,
+  },
+});
