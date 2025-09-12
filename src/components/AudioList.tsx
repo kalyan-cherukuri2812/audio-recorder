@@ -66,6 +66,63 @@ export const AudioList: React.FC<Props> = ({ recordings, onDelete }) => {
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
 
+  const renderItem = ({ item }) => (
+    <View style={styles.recorderItem}>
+      <View style={styles.info}>
+        <Text style={styles.title}>{item?.title}</Text>
+        <Text style={styles.date}>{item.createdAt}</Text>
+
+        {playingUri === item.uri && (
+          <View>
+            <Slider
+              style={{ width: responsiveWidth(50), height: 40, marginTop: 5 }}
+              minimumValue={0}
+              maximumValue={duration}
+              value={position}
+              minimumTrackTintColor="#0373FF"
+              maximumTrackTintColor="#ddd"
+              thumbTintColor="#0373FF"
+              onSlidingComplete={seekAudio}
+            />
+            <View style={styles.timerContainer}>
+              <Text style={styles.timerText}>{formatTime(position)}</Text>
+              <Text style={styles.timerText}>{formatTime(duration)}</Text>
+            </View>
+          </View>
+        )}
+      </View>
+
+      <View style={styles.actions}>
+        <TouchableOpacity
+          style={[styles.actionBtn, { backgroundColor: "#1DB954" }]}
+          onPress={() => playPauseSound(item.uri)}
+        >
+          {playingUri === item.uri && isPlaying ? (
+            <Pause
+              size={20}
+              color="#fff"
+            />
+          ) : (
+            <Play
+              size={20}
+              color="#fff"
+            />
+          )}
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.actionBtn, { backgroundColor: "#E53935" }]}
+          onPress={() => onDelete(item.uri)}
+        >
+          <Trash2
+            size={20}
+            color="#fff"
+          />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
   return (
     <FlatList
       ListHeaderComponent={() => (
@@ -77,62 +134,7 @@ export const AudioList: React.FC<Props> = ({ recordings, onDelete }) => {
       style={styles.fListContainer}
       data={recordings}
       keyExtractor={(item, index) => index.toString()}
-      renderItem={({ item }) => (
-        <View style={styles.recorderItem}>
-          <View style={styles.info}>
-            <Text style={styles.title}>{item?.title}</Text>
-            <Text style={styles.date}>{item.createdAt}</Text>
-
-            {playingUri === item.uri && (
-              <View>
-                <Slider
-                  style={{ width: responsiveWidth(50), height: 40, marginTop: 5 }}
-                  minimumValue={0}
-                  maximumValue={duration}
-                  value={position}
-                  minimumTrackTintColor="#0373FF"
-                  maximumTrackTintColor="#ddd"
-                  thumbTintColor="#0373FF"
-                  onSlidingComplete={seekAudio}
-                />
-                <View style={styles.timerContainer}>
-                  <Text style={styles.timerText}>{formatTime(position)}</Text>
-                  <Text style={styles.timerText}>{formatTime(duration)}</Text>
-                </View>
-              </View>
-            )}
-          </View>
-
-          <View style={styles.actions}>
-            <TouchableOpacity
-              style={[styles.actionBtn, { backgroundColor: "#1DB954" }]}
-              onPress={() => playPauseSound(item.uri)}
-            >
-              {playingUri === item.uri && isPlaying ? (
-                <Pause
-                  size={20}
-                  color="#fff"
-                />
-              ) : (
-                <Play
-                  size={20}
-                  color="#fff"
-                />
-              )}
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.actionBtn, { backgroundColor: "#E53935" }]}
-              onPress={() => onDelete(item.uri)}
-            >
-              <Trash2
-                size={20}
-                color="#fff"
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-      )}
+      renderItem={renderItem}
       ItemSeparatorComponent={() => <View style={styles.seperator} />}
       initialNumToRender={10}
       ListEmptyComponent={() => (
@@ -162,8 +164,8 @@ const styles = StyleSheet.create({
     color: "#222",
   },
   headerSubtitle: {
-    fontSize: 13,
-    color: "#666",
+    fontSize: responsiveFontSize(1.5),
+    color: "#666666ff",
     marginTop: 4,
   },
   fListContainer: {
@@ -171,10 +173,10 @@ const styles = StyleSheet.create({
   },
   seperator: {
     height: 1,
-    backgroundColor: "#ddd",
+    backgroundColor: "#ddddddff",
   },
   recorderItem: {
-    padding: 15,
+    padding: responsiveHeight(1),
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -183,13 +185,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#333",
+    fontSize: responsiveFontSize(2.2),
+    fontWeight: "500",
+    color: "#333333ff",
   },
   date: {
-    fontSize: 12,
-    color: "#666",
+    fontSize: responsiveFontSize(1.65),
+    color: "#666666ff",
     marginTop: 2,
   },
   actions: {
@@ -205,7 +207,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   emptyContainer: {
-    marginTop: 40,
+    marginTop: responsiveHeight(20),
     alignItems: "center",
     justifyContent: "center",
   },
@@ -227,7 +229,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   timerText: {
-    fontSize: 12,
-    color: "#666",
+    fontSize: responsiveFontSize(1.5),
+    color: "#666666ff",
   },
 });

@@ -4,6 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useAudioRecorder } from "../hooks/useAudioRecorder";
 import ScreenWrapper from "../components/ScreenWrapper";
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from "react-native-responsive-dimensions";
+import { Mic, MicOff } from "lucide-react-native";
 
 const RecordScreen = () => {
   const { recording, startRecording, stopRecording } = useAudioRecorder();
@@ -12,7 +13,6 @@ const RecordScreen = () => {
     if (recording) {
       stopRecording();
     } else {
-      //   navigation.navigate("ListScreen" as never);
       navigation.goBack();
     }
   };
@@ -26,7 +26,17 @@ const RecordScreen = () => {
           onPress={recording ? stopRecording : startRecording}
           activeOpacity={0.7}
         >
-          <Text style={styles.recordText}>{recording ? "■" : "●"}</Text>
+          {recording ? (
+            <Mic
+              size={28}
+              color="#fff"
+            />
+          ) : (
+            <MicOff
+              size={28}
+              color="#fff"
+            />
+          )}
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.listButton}
@@ -60,9 +70,11 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 60,
     backgroundColor: "#0373FF",
+    display: "flex",
+    flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#000",
+    shadowColor: "#000000ff",
     shadowOpacity: 0.2,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 3 },
@@ -70,19 +82,15 @@ const styles = StyleSheet.create({
   stopButton: {
     backgroundColor: "#E53935",
   },
-  recordText: {
-    fontSize: responsiveFontSize(5),
-    color: "#fff",
-  },
   listButton: {
     marginTop: responsiveHeight(5),
     paddingVertical: responsiveWidth(3),
     paddingHorizontal: responsiveHeight(4),
     borderRadius: 25,
-    backgroundColor: "#333",
+    backgroundColor: "#333333ff",
   },
   listButtonText: {
-    color: "#fff",
+    color: "white",
     fontSize: responsiveFontSize(1.8),
   },
 });

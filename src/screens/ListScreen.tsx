@@ -6,6 +6,7 @@ import { useAudioRecorder } from "../hooks/useAudioRecorder";
 import { Plus } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useFocusEffect } from "@react-navigation/native";
+import { responsiveHeight } from "react-native-responsive-dimensions";
 
 export default function ListScreen() {
   const navigation = useNavigation();
@@ -23,10 +24,9 @@ export default function ListScreen() {
         recordings={recordings}
         onDelete={deleteRecording}
       />
-      {/* Floating Button */}
       <TouchableOpacity
-        style={styles.fab}
-        onPress={() => navigation.navigate("RecordScreen")}
+        style={styles.floatingBtn}
+        onPress={() => navigation.navigate("RecordScreen" as never)}
         activeOpacity={0.7}
       >
         <Plus
@@ -39,9 +39,9 @@ export default function ListScreen() {
 }
 
 const styles = StyleSheet.create({
-  fab: {
+  floatingBtn: {
     position: "absolute",
-    bottom: 30,
+    bottom: responsiveHeight(8),
     alignSelf: "center",
     backgroundColor: "#0373FF",
     width: 60,
