@@ -80,7 +80,7 @@ export const AudioList: React.FC<Props> = ({ recordings, onDelete }) => {
               maximumValue={duration}
               value={position}
               minimumTrackTintColor="#0373FF"
-              maximumTrackTintColor="#ddd"
+              maximumTrackTintColor="#ddddddff"
               thumbTintColor="#0373FF"
               onSlidingComplete={seekAudio}
             />

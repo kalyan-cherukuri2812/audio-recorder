@@ -1,4 +1,4 @@
-import { View, TouchableOpacity, StyleSheet } from "react-native";
+import { View, TouchableOpacity, StyleSheet, Vibration } from "react-native";
 import React, { useCallback } from "react";
 import ScreenWrapper from "../components/ScreenWrapper";
 import { AudioList } from "../components/AudioList";
@@ -26,7 +26,10 @@ export default function ListScreen() {
       />
       <TouchableOpacity
         style={styles.floatingBtn}
-        onPress={() => navigation.navigate("RecordScreen" as never)}
+        onPress={() => {
+          Vibration.vibrate(100);
+          navigation.navigate("RecordScreen" as never);
+        }}
         activeOpacity={0.7}
       >
         <Plus

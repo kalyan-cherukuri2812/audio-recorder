@@ -29,12 +29,12 @@ const RecordScreen = () => {
           {recording ? (
             <Mic
               size={28}
-              color="#fff"
+              color="#ffffffff"
             />
           ) : (
             <MicOff
               size={28}
-              color="#fff"
+              color="#ffffffff"
             />
           )}
         </TouchableOpacity>

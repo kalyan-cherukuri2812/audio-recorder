@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Audio } from "expo-av";
 import * as FileSystem from "expo-file-system";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Vibration } from "react-native";
 
 export type RecordingItem = {
   uri: string;
@@ -10,7 +11,6 @@ export type RecordingItem = {
 };
 
 const STORAGE_KEY = "recordings";
-
 export function useAudioRecorder() {
   const [recording, setRecording] = useState<Audio.Recording | null>(null);
   const [recordings, setRecordings] = useState<RecordingItem[]>([]);
@@ -31,6 +31,7 @@ export function useAudioRecorder() {
 
   const startRecording = async () => {
     try {
+      Vibration.vibrate(200);
       const permission = await Audio.requestPermissionsAsync();
       if (!permission.granted) {
         alert("Permission required to record audio");
@@ -53,6 +54,7 @@ export function useAudioRecorder() {
   const stopRecording = async () => {
     try {
       if (!recording) return;
+      Vibration.vibrate(200);
       await recording.stopAndUnloadAsync();
       const sourceUri = recording.getURI();
       setRecording(null);
