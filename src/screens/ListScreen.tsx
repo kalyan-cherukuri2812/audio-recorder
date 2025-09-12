@@ -27,7 +27,7 @@ export default function ListScreen() {
       <TouchableOpacity
         style={styles.floatingBtn}
         onPress={() => {
-          Vibration.vibrate(100);
+          Vibration.vibrate(200);
           navigation.navigate("RecordScreen" as never);
         }}
         activeOpacity={0.7}
