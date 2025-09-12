@@ -11,7 +11,6 @@ import { responsiveHeight } from "react-native-responsive-dimensions";
 export default function ListScreen() {
   const navigation = useNavigation();
   const { recordings, deleteRecording, loadRecordings } = useAudioRecorder();
-  console.log("kjhgyujhgyujhbgyuhgh", recordings);
 
   useFocusEffect(
     useCallback(() => {
@@ -27,7 +26,7 @@ export default function ListScreen() {
       <TouchableOpacity
         style={styles.floatingBtn}
         onPress={() => {
-          Vibration.vibrate(200);
+          Vibration.vibrate(50);
           navigation.navigate("RecordScreen" as never);
         }}
         activeOpacity={0.7}

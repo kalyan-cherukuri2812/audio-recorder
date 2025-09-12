@@ -1,6 +1,5 @@
 import React from "react";
-import { View, SafeAreaView, StyleSheet, StyleProp, ViewStyle } from "react-native";
-import { responsiveHeight } from "react-native-responsive-dimensions";
+import { View, SafeAreaView, StyleSheet, StyleProp, ViewStyle, StatusBar, Platform } from "react-native";
 
 interface ScreenWrapperProps {
   children: React.ReactNode;
@@ -19,9 +18,9 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: "white",
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   container: {
-    paddingTop: responsiveHeight(3),
     flex: 1,
     backgroundColor: "white",
   },

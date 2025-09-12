@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useAudioRecorder } from "../hooks/useAudioRecorder";
@@ -8,6 +8,8 @@ import { Mic, MicOff } from "lucide-react-native";
 
 const RecordScreen = () => {
   const { recording, startRecording, stopRecording } = useAudioRecorder();
+  const [isProcessing, setIsProcessing] = useState(false);
+
   const navigation = useNavigation();
   const handleBackToList = () => {
     if (recording) {
@@ -17,14 +19,30 @@ const RecordScreen = () => {
     }
   };
 
+  const handleRecordPress = async () => {
+    if (isProcessing) return;
+    setIsProcessing(true);
+
+    try {
+      if (recording) {
+        await stopRecording();
+      } else {
+        await startRecording();
+      }
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   return (
     <ScreenWrapper>
       <View style={styles.container}>
         <Text style={styles.title}>{recording ? "Recording in progress..." : "Tap to start recording"}</Text>
         <TouchableOpacity
-          style={[styles.recordButton, recording && styles.stopButton]}
-          onPress={recording ? stopRecording : startRecording}
+          style={[styles.recordButton, recording && styles.stopButton, isProcessing && { opacity: 0.6 }]}
+          onPress={handleRecordPress}
           activeOpacity={0.7}
+          disabled={isProcessing}
         >
           {recording ? (
             <Mic

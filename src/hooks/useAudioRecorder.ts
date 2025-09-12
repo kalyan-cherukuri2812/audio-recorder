@@ -31,7 +31,7 @@ export function useAudioRecorder() {
 
   const startRecording = async () => {
     try {
-      Vibration.vibrate(200);
+      Vibration.vibrate(50);
       const permission = await Audio.requestPermissionsAsync();
       if (!permission.granted) {
         alert("Permission required to record audio");
@@ -54,7 +54,7 @@ export function useAudioRecorder() {
   const stopRecording = async () => {
     try {
       if (!recording) return;
-      Vibration.vibrate(200);
+      Vibration.vibrate(50);
       await recording.stopAndUnloadAsync();
       const sourceUri = recording.getURI();
       setRecording(null);
