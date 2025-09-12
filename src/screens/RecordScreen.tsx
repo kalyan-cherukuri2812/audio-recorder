@@ -12,8 +12,8 @@ const RecordScreen = () => {
     if (recording) {
       stopRecording();
     } else {
-      navigation.navigate("ListScreen" as never);
-      //   navigation.goBack();
+      //   navigation.navigate("ListScreen" as never);
+      navigation.goBack();
     }
   };
 

@@ -1,15 +1,22 @@
 import { View, TouchableOpacity, StyleSheet } from "react-native";
-import React from "react";
+import React, { useCallback } from "react";
 import ScreenWrapper from "../components/ScreenWrapper";
 import { AudioList } from "../components/AudioList";
 import { useAudioRecorder } from "../hooks/useAudioRecorder";
 import { Plus } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function ListScreen() {
   const navigation = useNavigation();
-  const { recordings, deleteRecording } = useAudioRecorder();
+  const { recordings, deleteRecording, loadRecordings } = useAudioRecorder();
   console.log("kjhgyujhgyujhbgyuhgh", recordings);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadRecordings();
+    }, [loadRecordings]),
+  );
   return (
     <ScreenWrapper>
       <AudioList

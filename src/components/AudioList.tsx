@@ -1,26 +1,69 @@
 import React, { useState } from "react";
 import { View, Text, FlatList, StyleSheet, TouchableOpacity } from "react-native";
+import Slider from "@react-native-community/slider";
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from "react-native-responsive-dimensions";
 import { Audio } from "expo-av";
-import { FolderOpen, Play, Trash2 } from "lucide-react-native";
+import { FolderOpen, Play, Pause, Trash2 } from "lucide-react-native";
 
 type Props = {
-  recordings: { uri: string; createdAt: string }[];
+  recordings: { uri: string; createdAt: string; title: string }[];
   onDelete: (uri: string) => void;
 };
 
 export const AudioList: React.FC<Props> = ({ recordings, onDelete }) => {
   const [sound, setSound] = useState<Audio.Sound | null>(null);
+  const [playingUri, setPlayingUri] = useState<string | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [position, setPosition] = useState(0);
+  const [duration, setDuration] = useState(1);
 
-  const playSound = async (uri: string) => {
+  const playPauseSound = async (uri: string) => {
+    if (sound && playingUri === uri) {
+      if (isPlaying) {
+        await sound.pauseAsync();
+        setIsPlaying(false);
+      } else {
+        await sound.playAsync();
+        setIsPlaying(true);
+      }
+      return;
+    }
+
     if (sound) {
       await sound.stopAsync();
       await sound.unloadAsync();
-      setSound(null);
     }
-    const { sound: newSound } = await Audio.Sound.createAsync({ uri });
+
+    const { sound: newSound } = await Audio.Sound.createAsync({ uri }, {}, onPlaybackStatusUpdate);
     setSound(newSound);
+    setPlayingUri(uri);
+    setIsPlaying(true);
     await newSound.playAsync();
+  };
+
+  const onPlaybackStatusUpdate = (status: any) => {
+    if (status.isLoaded) {
+      setPosition(status.positionMillis);
+      setDuration(status.durationMillis || 1);
+      if (status.didJustFinish) {
+        setPlayingUri(null);
+        setIsPlaying(false);
+        setPosition(0);
+      }
+    }
+  };
+
+  const seekAudio = async (value: number) => {
+    if (sound) {
+      await sound.setPositionAsync(value);
+    }
+  };
+
+  const formatTime = (millis: number) => {
+    const totalSeconds = Math.floor(millis / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
 
   return (
@@ -34,22 +77,48 @@ export const AudioList: React.FC<Props> = ({ recordings, onDelete }) => {
       style={styles.fListContainer}
       data={recordings}
       keyExtractor={(item, index) => index.toString()}
-      renderItem={({ item, index }) => (
+      renderItem={({ item }) => (
         <View style={styles.recorderItem}>
           <View style={styles.info}>
-            <Text style={styles.title}>Recording {index + 1}</Text>
+            <Text style={styles.title}>{item?.title}</Text>
             <Text style={styles.date}>{item.createdAt}</Text>
+
+            {playingUri === item.uri && (
+              <View>
+                <Slider
+                  style={{ width: responsiveWidth(50), height: 40, marginTop: 5 }}
+                  minimumValue={0}
+                  maximumValue={duration}
+                  value={position}
+                  minimumTrackTintColor="#0373FF"
+                  maximumTrackTintColor="#ddd"
+                  thumbTintColor="#0373FF"
+                  onSlidingComplete={seekAudio}
+                />
+                <View style={styles.timerContainer}>
+                  <Text style={styles.timerText}>{formatTime(position)}</Text>
+                  <Text style={styles.timerText}>{formatTime(duration)}</Text>
+                </View>
+              </View>
+            )}
           </View>
 
           <View style={styles.actions}>
             <TouchableOpacity
               style={[styles.actionBtn, { backgroundColor: "#1DB954" }]}
-              onPress={() => playSound(item.uri)}
+              onPress={() => playPauseSound(item.uri)}
             >
-              <Play
-                size={20}
-                color="#fff"
-              />
+              {playingUri === item.uri && isPlaying ? (
+                <Pause
+                  size={20}
+                  color="#fff"
+                />
+              ) : (
+                <Play
+                  size={20}
+                  color="#fff"
+                />
+              )}
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -79,6 +148,7 @@ export const AudioList: React.FC<Props> = ({ recordings, onDelete }) => {
     />
   );
 };
+
 const styles = StyleSheet.create({
   header: {
     paddingVertical: responsiveHeight(3),
@@ -103,7 +173,6 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: "#ddd",
   },
-
   recorderItem: {
     padding: 15,
     flexDirection: "row",
@@ -140,7 +209,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-
   emptyText: {
     fontSize: responsiveFontSize(2.3),
     fontWeight: "600",
@@ -151,5 +219,15 @@ const styles = StyleSheet.create({
     color: "#7f7d7dff",
     marginTop: responsiveHeight(1),
     textAlign: "center",
+  },
+  timerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: -10,
+    paddingHorizontal: 5,
+  },
+  timerText: {
+    fontSize: 12,
+    color: "#666",
   },
 });

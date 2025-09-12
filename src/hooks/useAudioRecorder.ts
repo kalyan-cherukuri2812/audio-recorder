@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Audio } from "expo-av";
 import * as FileSystem from "expo-file-system";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -6,6 +6,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export type RecordingItem = {
   uri: string;
   createdAt: string;
+  title: string;
 };
 
 const STORAGE_KEY = "recordings";
@@ -14,7 +15,6 @@ export function useAudioRecorder() {
   const [recording, setRecording] = useState<Audio.Recording | null>(null);
   const [recordings, setRecordings] = useState<RecordingItem[]>([]);
 
-  // Load saved recordings
   useEffect(() => {
     (async () => {
       const data = await AsyncStorage.getItem(STORAGE_KEY);
@@ -58,12 +58,13 @@ export function useAudioRecorder() {
       setRecording(null);
 
       if (sourceUri) {
-        const fileName = `recording_${Date.now()}.m4a`; // default format
+        const fileName = `unlox_recording_${Date.now()}.mp3`;
         const newPath = FileSystem.documentDirectory + fileName;
         await FileSystem.moveAsync({ from: sourceUri, to: newPath });
-
-        const newRecord = { uri: newPath, createdAt: new Date().toLocaleString() };
-        const updated = [...recordings, newRecord];
+        const now = new Date();
+        const timestamp = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+        const newRecord = { uri: newPath, createdAt: new Date().toLocaleString(), title: `Recording ${timestamp}` };
+        const updated = [newRecord, ...recordings];
         await saveRecordings(updated);
       }
     } catch (err) {
@@ -81,11 +82,29 @@ export function useAudioRecorder() {
     }
   };
 
+  const loadRecordings = useCallback(async () => {
+    try {
+      const data = await AsyncStorage.getItem(STORAGE_KEY);
+      if (data) {
+        setRecordings(JSON.parse(data));
+      } else {
+        setRecordings([]);
+      }
+    } catch (err) {
+      console.error("Failed to load recordings", err);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadRecordings();
+  }, [loadRecordings]);
+
   return {
     recording,
     recordings,
     startRecording,
     stopRecording,
     deleteRecording,
+    loadRecordings,
   };
 }
